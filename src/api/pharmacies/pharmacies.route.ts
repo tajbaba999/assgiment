@@ -4,6 +4,8 @@ import PharmacySchema from './pharmacies.schema';
 import Pharmacy from './pharmacies.model';
 import cacheMiddleware from '../redisCache';
 import redis from '../redisClient';
+import verifyToken from '../verifyToken'; 
+
 
 const router = Router();
 
@@ -14,7 +16,7 @@ const getPharmacyKey = (id: string) => `pharmacy:${id}`;
 const getPharmacyByNameKey = (name: string) => `pharmacy:name:${name}`;
 
 
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
   try {
     const parsed = PharmacySchema.parse(req.body);
     const newPharmacy = new Pharmacy(parsed);
@@ -73,7 +75,7 @@ router.get('/name/:name', cacheMiddleware((req) => getPharmacyByNameKey(req.para
 });
 
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
     const parsed = PharmacyUpdateSchema.parse(req.body);
@@ -92,8 +94,8 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Update a pharmacy by name
-router.put('/name/:name', async (req, res) => {
+
+router.put('/name/:name', verifyToken, async (req, res) => {
   try {
     const name = req.params.name;
     const parsed = PharmacyUpdateSchema.parse(req.body);
@@ -111,8 +113,8 @@ router.put('/name/:name', async (req, res) => {
   }
 });
 
-// Delete a pharmacy by ID
-router.delete('/:id', async (req, res) => {
+
+router.delete('/:id', verifyToken, async (req, res) => {
   try {
     const deletedPharmacy = await Pharmacy.findByIdAndDelete(req.params.id);
     if (!deletedPharmacy) {
@@ -125,7 +127,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Delete a pharmacy by name
-router.delete('/name/:name', async (req, res) => {
+router.delete('/name/:name', verifyToken, async (req, res) => {
   try {
     const deletedPharmacy = await Pharmacy.findOneAndDelete({ name: req.params.name });
     if (!deletedPharmacy) {

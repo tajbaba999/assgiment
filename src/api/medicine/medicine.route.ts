@@ -3,13 +3,23 @@ import { Router } from 'express';
 import medicineSchema from './medicine.schema';
 import Medicine from './medicine.model'; 
 import * as z from 'zod';
+import verifyToken from '../verifyToken';
+import redis from '../redisClient';
+
+const getAllMedicinesKey = () => 'medicines';
+const getMedicineKey = (id: string) => `medicine:${id}`;
+const getMedicinesByNameKey = (name: string) => `medicine:name:${name}`;
+const getMedicinesByPharmacyKey = (pharmacyId: string) => `medicine:pharmacy:${pharmacyId}`;
 
 const router = Router();
 
 
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
   try {
-    const parsed = medicineSchema.parse(req.body)
+    const parsed = medicineSchema.parse({
+      ...req.body,
+      pharmacy: req.pharmacyId, 
+    });
     const newMedicine = new Medicine(parsed);
     await newMedicine.save();
     res.status(201).json(newMedicine);
@@ -26,6 +36,7 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const medicines = await Medicine.find().populate('pharmacy');
+    await redis.set(getAllMedicinesKey(), JSON.stringify(medicines), 'EX', 3600);
     res.status(200).json(medicines);
   } catch (err: any) {
     res.status(500).json({ message: err.message });
@@ -39,6 +50,7 @@ router.get('/:id', async (req, res) => {
     if (!medicine) {
       return res.status(404).json({ message: 'Medicine not found' });
     }
+    await redis.set(getMedicineKey(req.params.id), JSON.stringify(medicine), 'EX', 3600); // Cache for 1 hour
     res.status(200).json(medicine);
   } catch (err: any) {
     res.status(500).json({ message: err.message });
@@ -49,11 +61,13 @@ router.get('/:id', async (req, res) => {
 router.get('/name/:name', async (req, res) => {
   try {
     const name = req.params.name;
-    const medicines = await Medicine.find({ name }).populate('pharmacy');
-    if (medicines.length === 0) {
-      return res.status(404).json({ message: 'No medicines found with this name' });
+    const cachedMedicines = await redis.get(getMedicinesByNameKey(name));
+    if (cachedMedicines) {
+      return res.status(200).json(JSON.parse(cachedMedicines));
     }
+    const medicines = await Medicine.find({ name }).populate('pharmacy');
     res.status(200).json(medicines);
+    await redis.set(getMedicinesByNameKey(name), JSON.stringify(medicines), 'EX', 3600); 
   } catch (err: any) {
     res.status(500).json({ message: err.message });
   }
@@ -62,10 +76,15 @@ router.get('/name/:name', async (req, res) => {
 router.get('/pharmacy/:pharmacyId', async (req, res) => {
   try {
     const pharmacyId = req.params.pharmacyId;
+    const cachedMedicines = await redis.get(getMedicinesByPharmacyKey(pharmacyId));
+    if (cachedMedicines) {
+      return res.status(200).json(JSON.parse(cachedMedicines));
+    }
     const medicines = await Medicine.find({ pharmacy: pharmacyId }).populate('pharmacy');
     if (medicines.length === 0) {
       return res.status(404).json({ message: 'No medicines found for this pharmacy' });
     }
+    await redis.set(getMedicinesByPharmacyKey(pharmacyId), JSON.stringify(medicines), 'EX', 3600); 
     res.status(200).json(medicines);
   } catch (err: any) {
     res.status(500).json({ message: err.message });

@@ -17,20 +17,16 @@ router.get<{}, MessageResponse>('/', (req, res) => {
 });
 
 router.use('/person', userRoutes);
-router.use('/emojis', emojis);
+router.use('/ ', emojis);
 router.use('/pharmacies', pharmaciesRouter); 
-router.use('/pharmacies/medicine', medicineRoutes);
+router.use('/medicine', medicineRoutes);
 
-router.get('/po', verifyToken,  (req, res) => {
+router.get('/protected', verifyToken,  (req, res) => {
   const pharmacyId =  req.pharmacyId;
   
   res.send(`Pharmacy ID: ${pharmacyId}`);
 });
-router.get('/pos', verifyToken, (req, res) => {
-  const pharmacyId = 'dasldfkn';
-  
-  res.send(`Pharmacy ID: ${pharmacyId}`);
-});
+
 
 
 

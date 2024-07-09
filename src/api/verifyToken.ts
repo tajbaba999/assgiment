@@ -24,11 +24,11 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
 
   try {
     const decoded = await jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-    // console.log('Decoded JWT:', decoded); // Add this line to debug the decoded JWT
+    // console.log(decoded); 
     req.pharmacyId = decoded.userId;
     next();
   } catch (err) {
-    // console.error('JWT verification error:', err); 
+    // console.error(err); 
     return res.status(401).send('Invalid token');
   }
 };
