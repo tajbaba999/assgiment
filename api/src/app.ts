@@ -3,17 +3,16 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import userRoute from './api/user/user.route';
 
 
-
-import * as middlewares from './middlewares';
+// import * as middlewares from './middlewares';
 import api from './api';
-import MessageResponse from './interfaces/MessageResponse';
 
 
 import connectDb  from './db';
 
-dotenv.config()
+dotenv.config();
 
 
 
@@ -28,15 +27,18 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-app.get<{}, MessageResponse>('/', (req, res) => {
-  res.json({
-    message: '🦄🌈✨👋🌎🌍🌏✨🌈🦄',
-  });
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.get('/', (req, res) =>{
+  // eslint-disable-next-line @typescript-eslint/object-curly-spacing
+  res.send({ 'mesaage' : 'Hello world'});
 });
 
-app.use('/api/v1', api);
 
-app.use(middlewares.notFound);
-app.use(middlewares.errorHandler);
+app.use('/api/v1', api);
+app.use('/person', userRoute);
+
+// app.use(middlewares.notFound);
+// app.use(middlewares.errorHandler);
 
 export default app;

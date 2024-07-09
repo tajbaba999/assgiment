@@ -1,17 +1,15 @@
-import { z } from 'zod';
-
+/* eslint-disable @typescript-eslint/quotes */
+import { z } from "zod";
 
 const medicineSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  description: z.string().min(1, 'Description needed'),
-  price: z.number().positive('postive'),
-  stock: z.number().int().nonnegative('postitive'),
-  pharmacy: z.string().uuid('Invalid ID'), 
+  name: z.string().min(1).optional(),
+  description: z.string().min(1).optional(),
+  price: z.string().optional(),
+  stock: z.string().optional(),
+  pharmacy: z.string().uuid().optional(),
 });
 
-
 type IMedicine = z.infer<typeof medicineSchema>;
-
 
 export default medicineSchema;
 export type { IMedicine };

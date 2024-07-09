@@ -26,13 +26,13 @@ const pharmacySchema: Schema = new Schema({
   name: { type: String, required: true },
   address: { type: addressSchema, required: true },
   contactInformation: { type: String, required: true },
-  phone_number: { type: String, required: true },  // Changed to String for phone numbers
+  phone_number: { type: String, required: true }, 
   email: { type: String, required: true },
   license_number: { type: String, required: true },
   owner_name: { type: String, required: true },
 });
 
-pharmacySchema.statics.findByName = async function(name: string) {
+pharmacySchema.statics.findByName = async function (name: string) {
   return this.findOne({ name });
 };
 

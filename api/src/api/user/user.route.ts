@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import User from './user.model';
@@ -9,6 +10,7 @@ const router = Router();
 router.post('/register', async (req, res) => {
   try {
     const parsedData = userRegisterSchema.parse(req.body);
+    console.log(parsedData);
     const { username, email, password } = parsedData;
     const user = new User({ username, email, password });
     await user.save();
@@ -39,6 +41,12 @@ router.post('/login', async (req, res) => {
     }
     res.status(500).json({ message: err.message });
   }
+});
+
+router.get('/test', (req, res) =>{
+  const bod = req.body;
+  console.log(bod);
+  res.json(bod);
 });
 
 export default router;
