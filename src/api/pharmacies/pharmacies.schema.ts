@@ -6,6 +6,7 @@ const Pharmacies = z.object({
     city: z.string().optional(),
     state: z.string().optional(),
     zip_code: z.string().optional(),
+    location : z.string().optional(),
   }).optional(),
   contactInformation: z.string().optional(),
   phone_number: z.string().optional(),

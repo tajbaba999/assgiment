@@ -2,7 +2,7 @@ import express from 'express';
 import MessageResponse from '../interfaces/MessageResponse';
 import emojis from './emojis';
 import pharmaciesRouter from './pharmacies/pharmacies.route'; 
-import userRoutes  from './user/user.route';
+// import userRoutes  from './user/user.route';
 import medicineRoutes  from './medicine/medicine.route';
 import verifyToken from './verifyToken';  
 
@@ -16,7 +16,7 @@ router.get<{}, MessageResponse>('/', (req, res) => {
 
 });
 
-router.use('/person', userRoutes);
+// router.use('/person', userRoutes);
 router.use('/ ', emojis);
 router.use('/pharmacies', pharmaciesRouter); 
 router.use('/medicine', medicineRoutes);

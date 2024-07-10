@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const connectDb = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/pharma');
+    await mongoose.connect(`${process.env.MONGODB_URI}/pharma`);
 
     console.log('MongoDB Connected');
   } catch (error : any) {

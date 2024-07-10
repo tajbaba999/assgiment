@@ -7,6 +7,7 @@ const medicineSchema = z.object({
   price: z.string().optional(),
   stock: z.string().optional(),
   pharmacy: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid object form").optional(),
+  image: z.string().url().optional(),
 });
 
 type IMedicine = z.infer<typeof medicineSchema>;
