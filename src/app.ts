@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import userRoute from './api/user/user.route';
+import setupSwagger from './swaggerConfig';
 
 
 // import * as middlewares from './middlewares';
@@ -21,6 +22,9 @@ require('dotenv').config();
 connectDb();
 
 const app = express();
+
+
+setupSwagger(app);
 
 app.use(morgan('dev'));
 app.use(helmet());

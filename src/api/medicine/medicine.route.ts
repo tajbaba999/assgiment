@@ -13,6 +13,89 @@ const router = Router();
 
 const upload = multer({ dest: 'uploads/' }); 
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Medicine:
+ *       type: object
+ *       required:
+ *         - name
+ *         - description
+ *         - price
+ *         - stock
+ *         - pharmacy
+ *         - imageUrl
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: The name of the medicine
+ *         description:
+ *           type: string
+ *           description: A description of the medicine
+ *         price:
+ *           type: string
+ *           description: The price of the medicine
+ *         stock:
+ *           type: string
+ *           description: The stock quantity of the medicine
+ *         pharmacy:
+ *           type: string
+ *           description: The pharmacy ID to which the medicine belongs
+ *         imageUrl:
+ *           type: string
+ *           description: The URL of the medicine image
+ *       example:
+ *         name: Aspirin
+ *         description: Pain reliever
+ *         price: 19.99
+ *         stock: 100
+ *         pharmacy: dcbf4427-4a54-4b6c-8c69-8b1044890444
+ *         imageUrl: http://example.com/image.jpg
+ */
+
+/**
+ * @swagger
+ * /medicines:
+ *   post:
+ *     summary: Create a new medicine
+ *     tags: [Medicines]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: string
+ *               stock:
+ *                 type: string
+ *               pharmacy:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Medicine created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Medicine'
+ *       400:
+ *         description: Validation error
+ *       500:
+ *         description: Server error
+ */
+
+
 router.post('/', verifyToken, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
@@ -44,6 +127,25 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
     }
   }
 });
+
+/**
+ * @swagger
+ * /medicines:
+ *   get:
+ *     summary: Get all medicines
+ *     tags: [Medicines]
+ *     responses:
+ *       200:
+ *         description: List of all medicines
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Medicine'
+ *       500:
+ *         description: Server error
+ */
 
 
 router.get('/', async (req: Request, res: Response) => {
