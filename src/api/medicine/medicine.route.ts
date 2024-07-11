@@ -56,7 +56,7 @@ const upload = multer({ dest: 'uploads/' });
 
 /**
  * @swagger
- * /medicines:
+ * /api/v1/medicines:
  *   post:
  *     summary: Create a new medicine
  *     tags: [Medicines]
@@ -105,7 +105,7 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
 
     const result = await cloudinary.uploader.upload(req.file.path);
 
-    // Parse and validate request body with additional image URL and pharmacy ID
+
     const parsed = medicineSchema.parse({
       ...req.body,
       pharmacy: req.pharmacyId,
@@ -130,7 +130,7 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
 
 /**
  * @swagger
- * /medicines:
+ * /api/v1/medicines:
  *   get:
  *     summary: Get all medicines
  *     tags: [Medicines]
@@ -157,6 +157,32 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+/**
+   * @swagger
+   * /api/v1/medicines/{id}:
+   *   get:
+   *     summary: Get a medicine by ID
+   *     tags: [Medicines]
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The medicine ID
+   *     responses:
+   *       200:
+   *         description: Medicine data
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Medicine'
+   *       404:
+   *         description: Medicine not found
+   *       500:
+   *         description: Server error
+   */
+
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const medicine = await Medicine.findById(req.params.id).populate('pharmacy');
@@ -169,6 +195,32 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 });
 
+/**
+   * @swagger
+   * /api/v1/medicines/name/{name}:
+   *   get:
+   *     summary: Get medicines by name
+   *     tags: [Medicines]
+   *     parameters:
+   *       - in: path
+   *         name: name
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The medicine name
+   *     responses:
+   *       200:
+   *         description: List of medicines
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: '#/components/schemas/Medicine'
+   *       500:
+   *         description: Server error
+   */
+
 router.get('/name/:name', async (req: Request, res: Response) => {
   try {
     const name = req.params.name;
@@ -178,6 +230,34 @@ router.get('/name/:name', async (req: Request, res: Response) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+/**
+   * @swagger
+   * /api/v1/medicines/pharmacy/{pharmacyId}:
+   *   get:
+   *     summary: Get medicines by pharmacy ID
+   *     tags: [Medicines]
+   *     parameters:
+   *       - in: path
+   *         name: pharmacyId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The pharmacy ID
+   *     responses:
+   *       200:
+   *         description: List of medicines
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: '#/components/schemas/Medicine'
+   *       404:
+   *         description: No medicines found for this pharmacy
+   *       500:
+   *         description: Server error
+   */
 
 router.get('/pharmacy/:pharmacyId', async (req: Request, res: Response) => {
   try {
@@ -191,6 +271,40 @@ router.get('/pharmacy/:pharmacyId', async (req: Request, res: Response) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+/**
+   * @swagger
+   * /api/v1/medicines/{id}:
+   *   put:
+   *     summary: Update a medicine by ID
+   *     tags: [Medicines]
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The medicine ID
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/Medicine'
+   *     responses:
+   *       200:
+   *         description: Updated medicine data
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Medicine'
+   *       400:
+   *         description: Validation error
+   *       404:
+   *         description: Medicine not found
+   *       500:
+   *         description: Server error
+   */
 
 router.put('/:id', async (req: Request, res: Response) => {
   try {
@@ -209,6 +323,42 @@ router.put('/:id', async (req: Request, res: Response) => {
   }
 });
 
+/**
+   * @swagger
+   * /api/v1/medicines/name/{name}:
+   *   put:
+   *     summary: Update medicines by name
+   *     tags: [Medicines]
+   *     parameters:
+   *       - in: path
+   *         name: name
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The medicine name
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/Medicine'
+   *     responses:
+   *       200:
+   *         description: Updated medicines data
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: '#/components/schemas/Medicine'
+   *       400:
+   *         description: Validation error
+   *       404:
+   *         description: No medicines found with this name
+   *       500:
+   *         description: Server error
+   */
+
 router.put('/name/:name', async (req: Request, res: Response) => {
   try {
     const name = req.params.name;
@@ -226,6 +376,36 @@ router.put('/name/:name', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/v1/medicines/{id}:
+ *   delete:
+ *     summary: Delete a medicine by ID
+ *     tags: [Medicines]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The medicine ID
+ *     responses:
+ *       200:
+ *         description: Medicine deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Medicine deleted
+ *       404:
+ *         description: Medicine not found
+ *       500:
+ *         description: Server error
+ */
+
 router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const deletedMedicine = await Medicine.findByIdAndDelete(req.params.id);
@@ -237,6 +417,36 @@ router.delete('/:id', async (req: Request, res: Response) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+/**
+ * @swagger
+ * /api/v1/medicines/name/{name}:
+ *   delete:
+ *     summary: Delete medicines by name
+ *     tags: [Medicines]
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The medicine name
+ *     responses:
+ *       200:
+ *         description: Medicines deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Medicines deleted
+ *       404:
+ *         description: No medicines found with this name
+ *       500:
+ *         description: Server error
+ */
 
 router.delete('/name/:name', async (req: Request, res: Response) => {
   try {

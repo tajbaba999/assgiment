@@ -15,6 +15,36 @@ const getAllPharmaciesKey = () => 'pharmacies';
 const getPharmacyKey = (id: string) => `pharmacy:${id}`;
 const getPharmacyByNameKey = (name: string) => `pharmacy:name:${name}`;
 
+/**
+ * @swagger
+ * tags:
+ *   name: Pharmacies
+ *   description: Pharmacy management
+ */
+
+/**
+ * @swagger
+ * /api/v1/pharmacies:
+ *   post:
+ *     summary: Create a new pharmacy
+ *     tags: [Pharmacies]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Pharmacy'
+ *     responses:
+ *       201:
+ *         description: The created pharmacy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Pharmacy'
+ *       400:
+ *         description: Bad request
+ */
+
 
 router.post('/', verifyToken, async (req, res) => {
   try {
@@ -27,6 +57,25 @@ router.post('/', verifyToken, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/v1/pharmacies:
+ *   get:
+ *     summary: Get all pharmacies
+ *     tags: [Pharmacies]
+ *     responses:
+ *       200:
+ *         description: List of all pharmacies
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Pharmacy'
+ *       500:
+ *         description: Internal server error
+ */
+
 
 router.get('/', cacheMiddleware(getAllPharmaciesKey), async (req, res) => {
   try {
@@ -38,7 +87,33 @@ router.get('/', cacheMiddleware(getAllPharmaciesKey), async (req, res) => {
   }
 });
 
-// Get a single pharmacy by ID with caching
+/**
+ * @swagger
+ * /api/v1/pharmacies/{id}:
+ *   get:
+ *     summary: Get a pharmacy by ID
+ *     tags: [Pharmacies]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The pharmacy ID
+ *     responses:
+ *       200:
+ *         description: The pharmacy data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Pharmacy'
+ *       404:
+ *         description: Pharmacy not found
+ *       500:
+ *         description: Internal server error
+ */
+
+
 router.get('/:id', cacheMiddleware((req) => getPharmacyKey(req.params.id)), async (req, res) => {
   try {
     const pharmacy = await Pharmacy.findById(req.params.id);
@@ -51,6 +126,32 @@ router.get('/:id', cacheMiddleware((req) => getPharmacyKey(req.params.id)), asyn
     res.status(500).json({ message: err.message });
   }
 });
+
+/**
+ * @swagger
+ * /api/v1/pharmacies/name/{name}:
+ *   get:
+ *     summary: Get a pharmacy by name
+ *     tags: [Pharmacies]
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The pharmacy name
+ *     responses:
+ *       200:
+ *         description: The pharmacy data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Pharmacy'
+ *       404:
+ *         description: Pharmacy not found
+ *       500:
+ *         description: Internal server error
+ */
 
 
 router.get('/name/:name', cacheMiddleware((req) => getPharmacyByNameKey(req.params.name)), async (req, res) => {
@@ -74,6 +175,40 @@ router.get('/name/:name', cacheMiddleware((req) => getPharmacyByNameKey(req.para
   }
 });
 
+/**
+ * @swagger
+ * /api/v1/pharmacies/{id}:
+ *   put:
+ *     summary: Update a pharmacy by ID
+ *     tags: [Pharmacies]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The pharmacy ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/PharmacyUpdate'
+ *     responses:
+ *       200:
+ *         description: The updated pharmacy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Pharmacy'
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Pharmacy not found
+ *       500:
+ *         description: Internal server error
+ */
+
 
 router.put('/:id', verifyToken, async (req, res) => {
   try {
@@ -94,6 +229,40 @@ router.put('/:id', verifyToken, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/v1/pharmacies/name/{name}:
+ *   put:
+ *     summary: Update a pharmacy by name
+ *     tags: [Pharmacies]
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The pharmacy name
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/PharmacyUpdate'
+ *     responses:
+ *       200:
+ *         description: The updated pharmacy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Pharmacy'
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Pharmacy not found
+ *       500:
+ *         description: Internal server error
+ */
+
 
 router.put('/name/:name', verifyToken, async (req, res) => {
   try {
@@ -113,6 +282,35 @@ router.put('/name/:name', verifyToken, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/v1/pharmacies/{id}:
+ *   delete:
+ *     summary: Delete a pharmacy by ID
+ *     tags: [Pharmacies]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The pharmacy ID
+ *     responses:
+ *       200:
+ *         description: Pharmacy deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Pharmacy deleted
+ *       404:
+ *         description: Pharmacy not found
+ *       500:
+ *         description: Internal server error
+ */
 
 router.delete('/:id', verifyToken, async (req, res) => {
   try {
@@ -126,7 +324,35 @@ router.delete('/:id', verifyToken, async (req, res) => {
   }
 });
 
-// Delete a pharmacy by name
+/**
+ * @swagger
+ * /api/v1/pharmacies/name/{name}:
+ *   delete:
+ *     summary: Delete a pharmacy by name
+ *     tags: [Pharmacies]
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The pharmacy name
+ *     responses:
+ *       200:
+ *         description: Pharmacy deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Pharmacy deleted
+ *       404:
+ *         description: Pharmacy not found
+ *       500:
+ *         description: Internal server error
+ */
 router.delete('/name/:name', verifyToken, async (req, res) => {
   try {
     const deletedPharmacy = await Pharmacy.findOneAndDelete({ name: req.params.name });
