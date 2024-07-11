@@ -7,7 +7,7 @@ import userRoute from './api/user/user.route';
 import setupSwagger from './swaggerConfig';
 
 
-// import * as middlewares from './middlewares';
+import * as middlewares from './middlewares';
 import api from './api';
 
 
@@ -42,7 +42,7 @@ app.get('/', (req, res) =>{
 app.use('/api/v1', api);
 app.use('/person', userRoute);
 
-// app.use(middlewares.notFound);
-// app.use(middlewares.errorHandler);
+app.use(middlewares.notFound);
+app.use(middlewares.errorHandler);
 
 export default app;
