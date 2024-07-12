@@ -13,6 +13,11 @@ const options = {
     servers: [
       {
         url: 'http://localhost:5000',
+        description : 'Development server',
+      },
+      {
+        url: 'https://vercel.com/taj-babas-projects/medlr/39P7XqgCmoh6MUQLghiw4jxiyYNd',
+        description: 'Production server',
       },
     ],
   },

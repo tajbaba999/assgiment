@@ -17,7 +17,7 @@ router.get<{}, MessageResponse>('/', (req, res) => {
 });
 
 // router.use('/person', userRoutes);
-router.use('/ ', emojis);
+router.use('/emojis ', emojis);
 router.use('/pharmacies', pharmaciesRouter); 
 router.use('/medicine', medicineRoutes);
 
