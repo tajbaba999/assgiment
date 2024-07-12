@@ -16,7 +16,7 @@ const options = {
         description : 'Development server',
       },
       {
-        url: 'https://vercel.com/taj-babas-projects/medlr/39P7XqgCmoh6MUQLghiw4jxiyYNd',
+        url: 'https://medlr-1g0g.onrender.com',
         description: 'Production server',
       },
     ],
