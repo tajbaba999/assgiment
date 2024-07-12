@@ -166,7 +166,7 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
  */
 
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/',  async (req: Request, res: Response) => {
   try {
     const medicines = await Medicine.find().populate('pharmacy');
     res.status(200).json(medicines);
@@ -277,7 +277,7 @@ router.get('/name/:name', async (req: Request, res: Response) => {
    *         description: Server error
    */
 
-router.get('/pharmacy/:pharmacyId', async (req: Request, res: Response) => {
+router.get('/pharmacy/:pharmacyId', verifyToken, async (req: Request, res: Response) => {
   try {
     const pharmacyId = req.params.pharmacyId;
     const medicines = await Medicine.find({ pharmacy: pharmacyId }).populate('pharmacy');
@@ -324,7 +324,7 @@ router.get('/pharmacy/:pharmacyId', async (req: Request, res: Response) => {
    *         description: Server error
    */
 
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', verifyToken, async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     const parsed = medicineSchema.parse(req.body); 
@@ -377,7 +377,7 @@ router.put('/:id', async (req: Request, res: Response) => {
    *         description: Server error
    */
 
-router.put('/name/:name', async (req: Request, res: Response) => {
+router.put('/name/:name', verifyToken, async (req: Request, res: Response) => {
   try {
     const name = req.params.name;
     const parsed = medicineSchema.parse(req.body);
@@ -424,7 +424,7 @@ router.put('/name/:name', async (req: Request, res: Response) => {
  *         description: Server error
  */
 
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', verifyToken, async (req: Request, res: Response) => {
   try {
     const deletedMedicine = await Medicine.findByIdAndDelete(req.params.id);
     if (!deletedMedicine) {
@@ -466,7 +466,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
  *         description: Server error
  */
 
-router.delete('/name/:name', async (req: Request, res: Response) => {
+router.delete('/name/:name', verifyToken, async (req: Request, res: Response) => {
   try {
     const name = req.params.name;
     const deletedMedicines = await Medicine.deleteMany({ name });
