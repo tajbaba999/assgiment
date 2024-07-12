@@ -85,4 +85,4 @@ Head over to http://localhost:3000/api-docs to view the API documentation genera
 ### 6. Test API Endpoints
 The best way to test the API endpoints is to import the Medlr.postman_collection.json file into Postman. You can download the file from the following link:
 
-Medlr.postman_collection.json
+[Medlr.postman_collection.json](https://github.com/tajbaba999/assgiment/blob/main/Medlr.postman_collection.json)
