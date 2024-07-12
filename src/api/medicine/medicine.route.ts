@@ -6,12 +6,12 @@ import medicineSchema from './medicine.schema';
 import Medicine from './medicine.model'; 
 import * as z from 'zod';
 import verifyToken from '../verifyToken';
-// import cloudinary from '../../cloudinaryConfig';  // Ensure this is correctly set up
-import { v2 as cloudinaryV2 } from 'cloudinary';
+import cloudinaryV2 from '../../cloudinaryConfig';  
+// import { v2 as cloudinaryV2 } from 'cloudinary';
 
 const router = Router();
 
-const storage = multer.memoryStorage();  // Use memory storage for multer
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 /**
@@ -96,36 +96,45 @@ const upload = multer({ storage });
  *         description: Server error
  */
 
+
+
 router.post('/', verifyToken, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'Image file is required' });
     }
 
-    const result = await cloudinaryV2.uploader.upload_stream(
+    const uploadStream = cloudinaryV2.uploader.upload_stream(
       { resource_type: 'image' },
-      // eslint-disable-next-line @typescript-eslint/no-shadow
       (error, result) => {
         if (error) {
           return res.status(500).json({ message: 'Image upload failed', error });
         }
 
-        const parsed = medicineSchema.parse({
-          ...req.body,
-          pharmacy: req.pharmacyId,
-          imageUrl: result?.secure_url,
-        });
+        try {
+          const parsed = medicineSchema.parse({
+            ...req.body,
+            pharmacy: req.pharmacyId,
+            imageUrl: result?.secure_url,
+          });
 
-        const newMedicine = new Medicine(parsed);
-        newMedicine.save().then(() => {
-          res.status(201).json(newMedicine);
-        }).catch(err => {
-          res.status(500).json({ message: err.message });
-        });
+          const newMedicine = new Medicine(parsed);
+          newMedicine.save().then(() => {
+            res.status(201).json(newMedicine);
+          }).catch(err => {
+            res.status(500).json({ message: err.message });
+          });
+        } catch (err: any) {
+          if (err instanceof z.ZodError) {
+            res.status(400).json({ message: 'Validation error', errors: err.errors });
+          } else {
+            res.status(500).json({ message: err.message });
+          }
+        }
       },
     );
 
-    result.end(req.file.buffer);
+    uploadStream.end(req.file.buffer);
 
   } catch (err: any) {
     if (err instanceof z.ZodError) {
@@ -134,7 +143,7 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
       res.status(500).json({ message: err.message });
     }
   }
-});
+})
 
 
 /**
